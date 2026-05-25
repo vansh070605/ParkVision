@@ -1,0 +1,14 @@
+# Backend
+backend/uploads/
+backend/__pycache__/
+*.mp4
+*.pt
+*.avi
+backend/*.jpg
+backend/*.png
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+.env
+.env.local
