@@ -4,12 +4,12 @@
 
 @layer base {
   body {
-    @apply bg-industrial-900 text-gray-100 font-sans m-0 p-0 overflow-hidden;
+    @apply bg-slate-50 text-slate-900 font-sans m-0 p-0 overflow-x-hidden;
   }
 }
 
 .glass-panel {
-  @apply bg-industrial-800/60 backdrop-blur-md border border-industrial-700 shadow-xl rounded-xl;
+  @apply bg-white/90 backdrop-blur-md border border-slate-200 shadow-2xl rounded-2xl;
 }
 
 .custom-grid {

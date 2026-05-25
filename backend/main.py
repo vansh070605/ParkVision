@@ -1,10 +1,10 @@
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect, UploadFile, File
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 import asyncio
 import os
 import json
 import shutil
-from vision import get_video_stream
+from vision import get_video_stream, auto_detect_spots
 
 app = FastAPI()
 
@@ -21,11 +21,26 @@ UPLOADS_DIR = os.path.join(BASE_DIR, "uploads")
 os.makedirs(UPLOADS_DIR, exist_ok=True)
 
 @app.post("/upload")
-async def upload_file(file: UploadFile = File(...)):
+async def upload_file(file: UploadFile = File(...), rois: str = Form(None)):
     file_path = os.path.join(UPLOADS_DIR, file.filename)
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
+        
+    if rois:
+        rois_path = os.path.join(UPLOADS_DIR, file.filename + "_rois.json")
+        with open(rois_path, "w") as f:
+            f.write(rois)
+            
     return {"filename": file.filename, "message": "File uploaded successfully"}
+
+@app.post("/auto-calibrate")
+async def auto_calibrate(file: UploadFile = File(...)):
+    file_path = os.path.join(UPLOADS_DIR, "calibration_" + file.filename)
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+        
+    detected_rois = auto_detect_spots(file_path)
+    return {"rois": detected_rois}
 
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket, filename: str, capacity: int = 10):

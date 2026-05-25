@@ -7,11 +7,12 @@ export default {
   theme: {
     extend: {
       colors: {
-        industrial: {
-          900: '#0f172a',
-          800: '#1e293b',
-          700: '#334155',
-          600: '#475569',
+        brand: {
+          navy: '#0f172a',
+          blue: '#1e293b',
+          light: '#f8fafc',
+          rose: '#f43f5e',
+          roseDark: '#e11d48',
         },
         accent: {
           green: '#10b981',
@@ -23,7 +24,11 @@ export default {
         mono: ['"JetBrains Mono"', 'monospace'],
         sans: ['Inter', 'sans-serif'],
       },
+      boxShadow: {
+        'soft': '0 20px 40px -15px rgba(0,0,0,0.05)',
+      }
     },
   },
   plugins: [],
 }
+// Trigger rebuild
