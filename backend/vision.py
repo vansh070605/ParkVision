@@ -4,11 +4,20 @@ import os
 import json
 from ultralytics import YOLO
 
-# Load the YOLOv8 medium model for much better accuracy on overhead angles
-model = YOLO("yolov8m.pt")
-
-# COCO classes: 2 is 'car', 5 is 'bus', 7 is 'truck'
-VEHICLE_CLASSES = [2, 5, 7]
+# Check if custom trained weights exist
+custom_weights_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "runs", "parkvision_model", "weights", "best.pt")
+if os.path.exists(custom_weights_path):
+    print(f"Loading custom trained YOLOv8 model from {custom_weights_path}")
+    model = YOLO(custom_weights_path)
+    # Custom models usually have a different class mapping (e.g. 0: 'car' or 'vehicle')
+    # We allow all classes present in the custom model to be detected as vehicles
+    VEHICLE_CLASSES = list(model.names.keys())
+else:
+    print("Loading pre-trained YOLOv8m model...")
+    # Load the YOLOv8 medium model for much better accuracy on overhead angles
+    model = YOLO("yolov8m.pt")
+    # COCO classes: 2 is 'car', 5 is 'bus', 7 is 'truck'
+    VEHICLE_CLASSES = [2, 5, 7]
 
 def get_video_stream(video_path, capacity: int):
     is_image = video_path.lower().endswith(('.jpg', '.jpeg', '.png'))

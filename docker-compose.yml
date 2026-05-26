@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: parkvision_db
+    restart: always
+    environment:
+      POSTGRES_USER: parkuser
+      POSTGRES_PASSWORD: parkpassword
+      POSTGRES_DB: parkvision
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U parkuser -d parkvision"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: parkvision_backend
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://parkuser:parkpassword@db:5432/parkvision
+      - YOLO_MODEL_PATH=yolov8n.pt
+      - FRAME_SKIP=3
+    volumes:
+      - ./backend/uploads:/workspace/uploads
+      - ./backend/weights:/workspace/weights
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
